@@ -89,6 +89,59 @@ export function App() {
     localStorage.setItem('sns-language', lang);
   }, [lang]);
 
+  useEffect(() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const revealTargets = Array.from(document.querySelectorAll<HTMLElement>([
+      '.hero-copy',
+      '.hero-image-panel',
+      '.section-heading',
+      '.product-card',
+      '.story-block > *',
+      '.shop-intro > *',
+      '.featured-image',
+      '.featured-copy',
+      '.collection-toolbar',
+      '.product-detail-layout > *',
+      '.personal-cta > *',
+      '.simple-hero',
+      '.inquiry-form > *',
+      '.story-columns > *',
+      '.related > *'
+    ].join(',')));
+
+    revealTargets.forEach((element, index) => {
+      element.dataset.scrollReveal = 'true';
+      element.style.setProperty('--reveal-delay', `${Math.min(index % 6, 5) * 70}ms`);
+    });
+
+    if (reduceMotion) {
+      revealTargets.forEach((element) => element.classList.add('is-visible'));
+      return;
+    }
+
+    document.body.classList.add('reveal-ready');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
+
+    revealTargets.forEach((element) => observer.observe(element));
+
+    return () => {
+      observer.disconnect();
+      revealTargets.forEach((element) => {
+        element.classList.remove('is-visible');
+        element.removeAttribute('data-scroll-reveal');
+        element.style.removeProperty('--reveal-delay');
+      });
+      document.body.classList.remove('reveal-ready');
+    };
+  }, [page, lang]);
+
   const count = cart.reduce((sum, item) => sum + item.quantity, 0);
   const addItem = (item: Omit<CartItem, 'id'>) => {
     setCart((existing) => [...existing, { ...item, id: crypto.randomUUID() }]);
