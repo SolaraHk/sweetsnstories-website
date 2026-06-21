@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Menu, Search, ShoppingBag, X } from 'lucide-react';
 import { featuredProduct, favourites, Product, products } from './data/products';
 
-type Page = 'home' | 'shop' | 'product' | 'custom' | 'story';
+type Page = 'home' | 'shop' | 'catalogue' | 'product' | 'custom' | 'story';
 type CartItem = { id: string; name: string; size: string; fulfilment: string; date: string; message: string; quantity: number; price: number };
 
 const tabs = ['All Cakes', 'Seasonal', 'Chiffon', 'Mini', 'Bespoke'] as const;
@@ -12,6 +12,7 @@ const asset = (path: string) => `${base}${path}`;
 function currentPage(): Page {
   const path = window.location.pathname.replace(base, '').replace(/^\//, '').replace(/\/$/, '');
   if (path.startsWith('shop/mikan-mango-chiffon')) return 'product';
+  if (path === 'products') return 'catalogue';
   if (path === 'shop') return 'shop';
   if (path === 'custom-cake') return 'custom';
   if (path === 'our-story') return 'story';
@@ -19,7 +20,7 @@ function currentPage(): Page {
 }
 
 function navigate(page: Page) {
-  const paths: Record<Page, string> = { home: '/', shop: '/shop/', product: '/shop/mikan-mango-chiffon/', custom: '/custom-cake/', story: '/our-story/' };
+  const paths: Record<Page, string> = { home: '/', shop: '/shop/', catalogue: '/products/', product: '/shop/mikan-mango-chiffon/', custom: '/custom-cake/', story: '/our-story/' };
   window.history.pushState(null, '', `${base}${paths[page]}`);
   window.dispatchEvent(new Event('sns-route'));
 }
@@ -52,6 +53,7 @@ export function App() {
       <main>
         {page === 'home' && <HomePage />}
         {page === 'shop' && <ShopPage />}
+        {page === 'catalogue' && <CataloguePage />}
         {page === 'product' && <ProductPage addItem={addItem} />}
         {page === 'custom' && <CustomCakePage />}
         {page === 'story' && <StoryPage />}
@@ -65,7 +67,7 @@ export function App() {
 function Header({ page, count, onNavigate, onBag, menuOpen, setMenuOpen }: { page: Page; count: number; onNavigate: (page: Page) => void; onBag: () => void; menuOpen: boolean; setMenuOpen: (open: boolean) => void }) {
   const links: { label: string; page: Page }[] = [
     { label: 'Shop', page: 'shop' },
-    { label: 'Seasonal', page: 'shop' },
+    { label: 'Product Catalogue', page: 'catalogue' },
     { label: 'Custom Cake', page: 'custom' },
     { label: 'Our Story', page: 'story' },
   ];
@@ -95,7 +97,7 @@ function Header({ page, count, onNavigate, onBag, menuOpen, setMenuOpen }: { pag
 function ProductCard({ product, onOpen = true }: { product: Product; onOpen?: boolean }) {
   return (
     <article className="product-card">
-      <button className="product-image-button" onClick={() => onOpen && navigate(product.slug === 'mikan-mango-chiffon' ? 'product' : 'shop')} aria-label={`View ${product.name}`}>
+      <button className="product-image-button" onClick={() => onOpen && navigate(product.slug === 'mikan-mango-chiffon' ? 'product' : 'catalogue')} aria-label={`View ${product.name}`}>
         <img src={asset(product.image)} alt={product.name} loading="lazy" />
         <span className="story-chip">{product.story}</span>
         {product.badge && <span className="badge">{product.badge}</span>}
@@ -116,7 +118,7 @@ function HomePage() {
           <p className="eyebrow citrus">SEASONAL STORY · NO. 06</p>
           <h1>Stories,<br />baked softly.</h1>
           <p className="chinese-line">輕柔的戚風蛋糕，盛載每一個值得記住的時刻。</p>
-          <div className="button-row"><button className="primary" onClick={() => navigate('shop')}>Shop the collection <span>→</span></button><button className="text-link" onClick={() => navigate('custom')}>Explore custom cakes</button></div>
+          <div className="button-row"><button className="primary" onClick={() => navigate('catalogue')}>View product catalogue <span>→</span></button><button className="text-link" onClick={() => navigate('custom')}>Explore custom cakes</button></div>
           <p className="journal">S&S JOURNAL — SUMMER 2026</p>
         </div>
         <div className="hero-image-panel">
@@ -126,7 +128,7 @@ function HomePage() {
         </div>
       </section>
       <section className="content-band">
-        <div className="section-heading"><div><p className="eyebrow">FRESH FROM THE STUDIO</p><h2>Seasonal favourites</h2></div><button className="arrow-link" onClick={() => navigate('shop')}>VIEW ALL CAKES <span>→</span></button></div>
+        <div className="section-heading"><div><p className="eyebrow">FRESH FROM THE STUDIO</p><h2>Seasonal favourites</h2></div><button className="arrow-link" onClick={() => navigate('catalogue')}>VIEW CATALOGUE <span>→</span></button></div>
         <div className="favourites-grid">{favourites.map((product) => <ProductCard key={product.slug} product={product} />)}</div>
       </section>
       <section className="story-block">
@@ -138,21 +140,37 @@ function HomePage() {
 }
 
 function ShopPage() {
-  const [active, setActive] = useState<(typeof tabs)[number]>('All Cakes');
-  const shown = active === 'All Cakes' ? products : products.filter((product) => product.category === active);
   return (
-    <div className="page shop-page">
+    <div className="page shop-page shop-landing">
       <section className="shop-intro">
-        <div><p className="eyebrow citrus">THE COMPLETE COLLECTION · SUMMER 2026</p><h1>The cake<br />collection.</h1><p className="chinese-line">輕柔戚風、當季水果與手工鮮忌廉。每一款蛋糕，都為值得記住的日子而做。</p></div>
-        <aside><strong>12</strong><span>STORIES CURRENTLY AVAILABLE</span><p>All cakes are handmade to order in our Tsuen Wan studio. Please reserve at least four days before pickup or delivery.</p></aside>
+        <div><p className="eyebrow citrus">SEASONAL SHOP · SUMMER 2026</p><h1>Shop the current<br />cake stories.</h1><p className="chinese-line">這裡保留季節主題與訂購方式；完整產品目錄已獨立成頁，方便慢慢瀏覽全部款式。</p></div>
+        <aside><strong>{products.length}</strong><span>CATALOGUE ITEMS ON A DEDICATED PAGE</span><p>All cakes are handmade to order in our Tsuen Wan studio. Please reserve at least four days before pickup or delivery.</p><button className="primary orange compact-cta" onClick={() => navigate('catalogue')}>Open product catalogue →</button></aside>
       </section>
       <section className="featured-story">
         <div className="featured-image"><img src={asset('/assets/story/featured-citrus.jpg')} alt="Seasonal mikan and mango cake" /><span>NOW IN SEASON · MIKAN & MANGO</span><em>SEASONAL STORY 06 · CITRUS</em></div>
         <div className="featured-copy"><p className="eyebrow citrus">SEASONAL EDIT</p><h2>Bright citrus,<br />soft pandan.</h2><p>Mandarin, mango and coconut water jelly layered through feather-light chiffon.</p><button className="text-link" onClick={() => navigate('product')}>EXPLORE STORY C07 →</button></div>
       </section>
-      <section className="collection-toolbar"><div className="tabs">{tabs.map((tab) => <button key={tab} className={tab === active ? 'active' : ''} onClick={() => setActive(tab)}>{tab}</button>)}</div><div><span>{shown.length} PRODUCTS</span><span className="divider" />SORT · FEATURED⌄</div></section>
-      <section className="product-grid">{shown.map((product) => <ProductCard key={product.slug} product={product} />)}</section>
+      <section className="content-band shop-featured-strip">
+        <div className="section-heading"><div><p className="eyebrow">EDITOR'S PICKS</p><h2>A short seasonal edit</h2></div><button className="arrow-link" onClick={() => navigate('catalogue')}>VIEW FULL CATALOGUE <span>→</span></button></div>
+        <div className="favourites-grid">{favourites.map((product) => <ProductCard key={product.slug} product={product} />)}</div>
+      </section>
       <section className="personal-cta"><div>Pickup · Wing Hing Industrial Building<br />Delivery · Selected Hong Kong districts</div><div><h2>Need something personal?</h2><button className="text-link" onClick={() => navigate('custom')}>Explore custom celebration cakes →</button></div><div>Four-day advance order<br />WhatsApp 9680 2750</div></section>
+    </div>
+  );
+}
+
+function CataloguePage() {
+  const [active, setActive] = useState<(typeof tabs)[number]>('All Cakes');
+  const shown = active === 'All Cakes' ? products : products.filter((product) => product.category === active);
+  return (
+    <div className="page catalogue-page">
+      <section className="shop-intro catalogue-intro">
+        <div><p className="eyebrow citrus">PRODUCT CATALOGUE · SUMMER 2026</p><h1>Browse every<br />cake in one place.</h1><p className="chinese-line">獨立產品目錄頁：按分類瀏覽季節款、戚風蛋糕、迷你款與客製款式。</p></div>
+        <aside><strong>{products.length}</strong><span>PRODUCTS CURRENTLY AVAILABLE</span><p>Choose a product story to view details. The demo bag prepares a WhatsApp order draft only; no live payment is connected.</p></aside>
+      </section>
+      <section className="collection-toolbar"><div className="tabs">{tabs.map((tab) => <button key={tab} className={tab === active ? 'active' : ''} onClick={() => setActive(tab)}>{tab}</button>)}</div><div><span>{shown.length} PRODUCTS</span><span className="divider" />SORT · FEATURED⌄</div></section>
+      <section className="product-grid catalogue-grid">{shown.map((product) => <ProductCard key={product.slug} product={product} />)}</section>
+      <section className="personal-cta"><div>Pickup · Wing Hing Industrial Building<br />Delivery · Selected Hong Kong districts</div><div><h2>Looking for a custom cake?</h2><button className="text-link" onClick={() => navigate('custom')}>Start a bespoke inquiry →</button></div><div>Four-day advance order<br />WhatsApp 9680 2750</div></section>
     </div>
   );
 }
