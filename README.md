@@ -1,33 +1,37 @@
-# Sweets N Stories Website Build Pack
+# Sweets N Stories Website
 
-A build handoff repository for the **Sweets N Stories** cake shop website.
+Polished Vite + React + TypeScript website for **Sweets N Stories**, a Hong Kong chiffon cake shop.
 
-## Contents
+## Built pages
 
-- `START_HERE_FOR_PA.md` — first-read handoff instructions.
-- `project-build-prompt.md` — full executable build prompt for a coding agent.
-- `notes.md` — visual reference mapping, business assumptions, and product seed data.
-- `references/` — design screenshots supplied by Sloppy.
+- `/` — editorial homepage
+- `/shop/` — collection grid with category filters
+- `/shop/mikan-mango-chiffon/` — product detail and demo add-to-bag flow
+- `/custom-cake/` — custom cake inquiry form with demo-safe success state
+- `/our-story/` — brand story page
 
-## Intended build
-
-Build a polished boutique Hong Kong cake shop website with:
-
-- Editorial homepage
-- Shop/collection page
-- Product detail/order page
-- Custom cake inquiry page
-- Our Story page
-- Demo-safe cart/bag flow
-
-## How to use
-
-Give `project-build-prompt.md` to the builder/agent, or ask PA to extract/read this repo and start from `START_HERE_FOR_PA.md`.
-
-Recommended first command for a coding agent:
+## Local commands
 
 ```bash
-cat START_HERE_FOR_PA.md && cat project-build-prompt.md
+npm install
+npm run dev
+npm run build
+npm run preview
 ```
 
-Then build the actual website inside this repo and commit the finished result.
+The site uses static/demo product data from `src/data/products.ts`, local cart state, and demo-safe WhatsApp inquiry links. There is **no live payment, inventory, delivery-slot, or backend order submission** connected yet.
+
+## Imagery/data notes
+
+- Product images in `public/assets/` are cropped/derived from the supplied reference screenshots for MVP demo use.
+- Product catalogue and prices are demo seed data from `notes.md`.
+- Final production launch should replace imagery with approved product photography and connect real order/payment/delivery flows if required.
+
+## Reference pack preserved
+
+The original handoff files remain in this repository:
+
+- `START_HERE_FOR_PA.md`
+- `project-build-prompt.md`
+- `notes.md`
+- `references/`
