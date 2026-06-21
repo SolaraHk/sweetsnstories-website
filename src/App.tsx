@@ -199,7 +199,7 @@ function ShopPage({ lang }: { lang: Lang }) {
       </section>
       <section className="featured-story">
         <div className="featured-image"><img src={asset('/assets/story/featured-citrus.jpg')} alt={tr(lang, 'Seasonal mikan and mango cake', '季節蜜柑芒果蛋糕')} /><span>{tr(lang, 'NOW IN SEASON · MIKAN & MANGO', '今季限定 · 蜜柑與芒果')}</span><em>{tr(lang, 'SEASONAL STORY 06 · CITRUS', '季節故事 06 · 柑橘')}</em></div>
-        <div className="featured-copy"><p className="eyebrow citrus">{tr(lang, 'SEASONAL EDIT', '季節精選')}</p><h2>{tr(lang, 'Bright citrus,', '明亮柑橘，')}<br />{tr(lang, 'soft pandan.', '柔軟班蘭。')}</h2><p>{tr(lang, 'Mandarin, mango and coconut water jelly layered through feather-light chiffon.', '蜜柑、芒果與椰子水啫喱，夾在輕盈戚風之間。')}</p><button className="text-link" onClick={() => navigate('product')}>{tr(lang, 'EXPLORE STORY C07', '探索故事 C07')} →</button></div>
+        <div className="featured-copy"><p className="eyebrow citrus">{tr(lang, 'SEASONAL EDIT', '季節精選')}</p><h2>{tr(lang, 'Bright citrus,', '明亮柑橘，')}<br />{tr(lang, 'soft pandan.', '柔軟班蘭。')}</h2><p>{tr(lang, 'Mandarin, mango and coconut water jelly layered through feather-light chiffon.', '蜜柑、芒果與椰子水啫喱，夾在輕盈戚風之間。')}</p><button className="text-link" onClick={() => navigate('product')}>{tr(lang, 'View Mikan & Mango Cake', '查看蜜柑芒果蛋糕')} →</button></div>
       </section>
       <section className="content-band shop-featured-strip">
         <div className="section-heading"><div><p className="eyebrow">{tr(lang, "EDITOR'S PICKS", '店主精選')}</p><h2>{tr(lang, 'A short seasonal edit', '簡短季節選集')}</h2></div><button className="arrow-link" onClick={() => navigate('catalogue')}>{tr(lang, 'VIEW FULL CATALOGUE', '查看完整目錄')} <span>→</span></button></div>
@@ -248,7 +248,7 @@ function ProductPage({ lang, addItem }: { lang: Lang; addItem: (item: Omit<CartI
         <aside className="thumbnail-rail">{thumbs.map((thumb) => <button key={thumb} className={activeImage === thumb ? 'active' : ''} onClick={() => setActiveImage(thumb)}><img src={asset(thumb)} alt={text.name} /></button>)}</aside>
         <div className="detail-image"><img src={asset(activeImage)} alt={text.name} /><span>{tr(lang, 'HANDMADE IN HONG KONG · SEASONAL EDITION', '香港手工製作 · 季節限定')}</span></div>
         <form className="product-panel" onSubmit={(event) => { event.preventDefault(); onAdd(); }}>
-          <p className="eyebrow citrus">{tr(lang, 'STORY C07 · SEASONAL', '故事 C07 · 季節款')}</p><h1>{text.name}</h1><p className="jp">みかん × マンゴー パンダンシフォン</p><p className="price">HK$428</p><p>{text.description}</p>
+          <p className="eyebrow citrus">{tr(lang, 'SEASONAL CAKE · MIKAN & MANGO', '季節蛋糕 · 蜜柑芒果')}</p><h1>{text.name}</h1><p className="jp">みかん × マンゴー パンダンシフォン</p><p className="price">HK$428</p><p>{text.description}</p>
           <div className="tag-row">{text.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
           <div className="option-label"><span>{tr(lang, 'SIZE', '尺寸')}</span><span>{tr(lang, 'SERVES 4–8', '適合 4–8 人')}</span></div><div className="choice-row">{['5 inch', '6 inch', '7 inch'].map((option) => <button type="button" key={option} className={size === option ? 'selected' : ''} onClick={() => setSize(option)}>{option}</button>)}</div>
           <label className="option-label solo">{tr(lang, 'FULFILMENT', '取貨方式')}</label><div className="choice-row">{['Pickup', 'Delivery'].map((option) => <button type="button" key={option} className={fulfilment === option ? 'selected' : ''} onClick={() => setFulfilment(option)}>{tr(lang, option, option === 'Pickup' ? '自取' : '配送')}</button>)}</div>
