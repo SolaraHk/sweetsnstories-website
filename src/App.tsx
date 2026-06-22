@@ -1,8 +1,8 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
 import { Menu, Search, ShoppingBag, X } from 'lucide-react';
 import { featuredProduct, favourites, Product, products } from './data/products';
 
-type Page = 'home' | 'shop' | 'catalogue' | 'product' | 'custom' | 'story';
+type Page = 'home' | 'shop' | 'catalogue' | 'product' | 'custom' | 'story' | 'privacy' | 'terms';
 type Lang = 'en' | 'zh';
 type CartItem = { id: string; name: string; size: string; fulfilment: string; date: string; message: string; quantity: number; price: number };
 
@@ -38,6 +38,8 @@ function currentPage(): Page {
   if (path === 'shop') return 'shop';
   if (path === 'custom-cake') return 'custom';
   if (path === 'our-story') return 'story';
+  if (path === 'privacy-policy') return 'privacy';
+  if (path === 'terms-and-conditions') return 'terms';
   return 'home';
 }
 
@@ -50,9 +52,13 @@ function initialLanguage(): Lang {
   return navigator.language?.toLowerCase().startsWith('zh') ? 'zh' : 'en';
 }
 
+function pathFor(page: Page) {
+  const paths: Record<Page, string> = { home: '/', shop: '/shop/', catalogue: '/products/', product: '/shop/mikan-mango-chiffon/', custom: '/custom-cake/', story: '/our-story/', privacy: '/privacy-policy/', terms: '/terms-and-conditions/' };
+  return `${base}${paths[page]}`;
+}
+
 function navigate(page: Page) {
-  const paths: Record<Page, string> = { home: '/', shop: '/shop/', catalogue: '/products/', product: '/shop/mikan-mango-chiffon/', custom: '/custom-cake/', story: '/our-story/' };
-  window.history.pushState(null, '', `${base}${paths[page]}`);
+  window.history.pushState(null, '', pathFor(page));
   window.dispatchEvent(new Event('sns-route'));
 }
 
@@ -106,6 +112,8 @@ export function App() {
       '.simple-hero',
       '.inquiry-form > *',
       '.story-columns > *',
+      '.legal-hero',
+      '.legal-section-card',
       '.related > *'
     ].join(',')));
 
@@ -160,6 +168,8 @@ export function App() {
         {page === 'product' && <ProductPage lang={lang} addItem={addItem} />}
         {page === 'custom' && <CustomCakePage lang={lang} />}
         {page === 'story' && <StoryPage lang={lang} />}
+        {page === 'privacy' && <LegalPage lang={lang} kind="privacy" />}
+        {page === 'terms' && <LegalPage lang={lang} kind="terms" />}
       </main>
       <Footer lang={lang} onNavigate={navigate} />
       <CartDrawer lang={lang} open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onQty={updateQuantity} onRemove={removeItem} />
@@ -343,11 +353,46 @@ function PersonalCta({ lang, customText, buttonText }: { lang: Lang; customText:
   return <section className="personal-cta"><div><p className="eyebrow citrus">{tr(lang, 'CUSTOM CELEBRATIONS', '客製慶祝蛋糕')}</p><h2>{customText}</h2><button className="text-link" onClick={() => navigate('custom')}>{buttonText} →</button></div></section>;
 }
 
+function LegalPage({ lang, kind }: { lang: Lang; kind: 'privacy' | 'terms' }) {
+  const isPrivacy = kind === 'privacy';
+  const sections = isPrivacy
+    ? [
+        { title: tr(lang, 'Information we may collect', '我們可能收集的資料'), body: tr(lang, 'Placeholder note: this demo currently only remembers the visitor’s language preference locally in the browser. It does not collect form submissions, customer accounts, payment details, analytics events, or newsletter signups.', '佔位說明：此示範網站目前只會在訪客瀏覽器本機記住語言偏好。它不會收集表格提交、客戶帳戶、付款資料、分析事件或電子報訂閱。') },
+        { title: tr(lang, 'How information would be used', '資料將如何使用'), body: tr(lang, 'Before launch, this section should be replaced with a client-approved policy explaining any real enquiry forms, ordering workflow, analytics, payment processing, delivery coordination, or customer support data use.', '正式上線前，這部分應替換為商戶核准的政策，清楚說明任何真實查詢表格、訂單流程、分析工具、付款處理、配送安排或客戶服務資料用途。') },
+        { title: tr(lang, 'Cookies and local storage', 'Cookie 與本機儲存'), body: tr(lang, 'At demo stage, the site uses localStorage for language preference only. If analytics, pixels, advertising cookies, or embedded third-party tools are added later, this policy must be updated before public launch.', '示範階段，網站只使用 localStorage 儲存語言偏好。如日後加入分析、像素、廣告 cookie 或第三方嵌入工具，必須在公開上線前更新本政策。') },
+      ]
+    : [
+        { title: tr(lang, 'Website use', '網站使用'), body: tr(lang, 'Placeholder note: this site is a draft demonstration for review. Product descriptions, prices, availability, pickup, delivery, and ordering details must be confirmed by the business before customer use.', '佔位說明：此網站為供審閱的示範草稿。產品描述、價格、供應情況、自取、配送及訂購詳情，必須由商戶確認後才可供客戶使用。') },
+        { title: tr(lang, 'Orders and payments', '訂單與付款'), body: tr(lang, 'No live checkout, card payment, order database, or automatic fulfilment is connected in this demo. A final terms page should describe the confirmed ordering, refund, cancellation, and delivery rules.', '此示範網站未連接即時結帳、信用卡付款、訂單資料庫或自動履行流程。最終條款頁應列明已確認的訂購、退款、取消及配送規則。') },
+        { title: tr(lang, 'Content and imagery', '內容與圖片'), body: tr(lang, 'Reference-derived imagery and demo catalogue data are used for preview only. Final photography, brand copy, product claims, and any public media usage require business approval before launch.', '參考圖片與示範目錄資料只供預覽。正式上線前，最終相片、品牌文案、產品聲稱及任何公開媒體使用均需商戶核准。') },
+      ];
+
+  return (
+    <div className="page simple-page legal-page" data-legal-page={isPrivacy ? 'privacy-policy' : 'terms-and-conditions'}>
+      <section className="simple-hero legal-hero">
+        <p className="eyebrow citrus">{tr(lang, 'PLACEHOLDER LEGAL PAGE', '法律頁面佔位')}</p>
+        <h1>{isPrivacy ? tr(lang, 'Privacy Policy', '私隱政策') : tr(lang, 'Terms and Conditions', '條款及細則')}</h1>
+        <p>{isPrivacy
+          ? tr(lang, 'Draft privacy placeholder for Sweets N Stories. Replace with a business-approved policy before launch or before adding real data collection.', 'Sweets N Stories 私隱政策草稿佔位。正式上線或加入真實資料收集前，請替換為商戶核准版本。')
+          : tr(lang, 'Draft terms placeholder for Sweets N Stories. Replace with final business-approved terms before accepting real customer orders.', 'Sweets N Stories 條款草稿佔位。接受真實客戶訂單前，請替換為商戶核准的最終條款。')}</p>
+      </section>
+      <section className="legal-content" aria-label={isPrivacy ? 'Privacy policy placeholder sections' : 'Terms and conditions placeholder sections'}>
+        {sections.map((section, index) => <article className="legal-section-card" key={section.title}><span>{String(index + 1).padStart(2, '0')}</span><h3>{section.title}</h3><p>{section.body}</p></article>)}
+      </section>
+    </div>
+  );
+}
+
 function CartDrawer({ lang, open, items, onClose, onQty, onRemove }: { lang: Lang; open: boolean; items: CartItem[]; onClose: () => void; onQty: (id: string, delta: number) => void; onRemove: (id: string) => void }) {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   return <aside className={`cart-drawer ${open ? 'open' : ''}`} aria-hidden={!open}><div className="cart-header"><h2>{tr(lang, 'Your bag', '你的購物袋')}</h2><button onClick={onClose} aria-label={tr(lang, 'Close bag', '關閉購物袋')}><X /></button></div>{items.length === 0 ? <p className="empty">{tr(lang, 'Your demo bag is empty.', '你的示範購物袋是空的。')}</p> : <div className="cart-list">{items.map((item) => <article key={item.id}><div><h3>{item.name}</h3><p>{item.size} · {item.fulfilment} · {item.date}</p>{item.message && <p>{tr(lang, 'Message:', '蛋糕牌文字：')} {item.message}</p>}</div><div className="cart-controls"><button onClick={() => onQty(item.id, -1)}>−</button><span>{item.quantity}</span><button onClick={() => onQty(item.id, 1)}>+</button><button className="remove" onClick={() => onRemove(item.id)}>{tr(lang, 'Remove', '移除')}</button></div></article>)}</div>}<div className="cart-footer"><p>{tr(lang, 'Four-day advance ordering applies. No live payment is connected in this demo.', '需四日前預訂。此示範未連接即時付款。')}</p><strong>{tr(lang, 'Total', '總數')} HK${total}</strong><a className="primary orange" href="https://wa.me/85296802750" target="_blank" rel="noreferrer">{tr(lang, 'Prepare WhatsApp order', '準備 WhatsApp 訂單')}</a></div></aside>;
 }
 
 function Footer({ lang, onNavigate }: { lang: Lang; onNavigate: (page: Page) => void }) {
-  return <footer className="site-footer"><div>{tr(lang, 'Pickup · Wing Hing Industrial Building', '自取 · 榮興工業大廈')}<br />{tr(lang, 'Delivery · Selected Hong Kong districts', '配送 · 香港指定地區')}</div><button onClick={() => onNavigate('home')} className="footer-mark">回首甜時</button><div>Instagram @sns.hkg<br />WhatsApp 9680 2750</div><p className="disclaimer">{tr(lang, 'Demo site using supplied reference-derived imagery and demo seed data. Final product photography, catalogue, policies, payment and delivery integrations need business approval before launch.', '示範網站使用參考圖片與示範產品資料。正式上線前，產品相片、目錄、政策、付款及配送整合均需商戶確認。')}</p><a className="created-by" href="https://solara.hk" target="_blank" rel="noreferrer">Website created by Solara.hk</a></footer>;
+  const legalClick = (event: MouseEvent<HTMLAnchorElement>, page: Page) => {
+    event.preventDefault();
+    onNavigate(page);
+  };
+
+  return <footer className="site-footer"><div>{tr(lang, 'Pickup · Wing Hing Industrial Building', '自取 · 榮興工業大廈')}<br />{tr(lang, 'Delivery · Selected Hong Kong districts', '配送 · 香港指定地區')}<nav className="legal-links" aria-label={tr(lang, 'Legal pages', '法律頁面')}><a href={pathFor('privacy')} onClick={(event) => legalClick(event, 'privacy')}>{tr(lang, 'Privacy Policy', '私隱政策')}</a><a href={pathFor('terms')} onClick={(event) => legalClick(event, 'terms')}>{tr(lang, 'Terms and Conditions', '條款及細則')}</a></nav></div><button onClick={() => onNavigate('home')} className="footer-mark">回首甜時</button><div>Instagram @sns.hkg<br />WhatsApp 9680 2750</div><p className="disclaimer">{tr(lang, 'Demo site using supplied reference-derived imagery and demo seed data. Final product photography, catalogue, policies, payment and delivery integrations need business approval before launch.', '示範網站使用參考圖片與示範產品資料。正式上線前，產品相片、目錄、政策、付款及配送整合均需商戶確認。')}</p><a className="created-by" href="https://solara.hk" target="_blank" rel="noreferrer">Website created by Solara.hk</a></footer>;
 }

@@ -2,7 +2,7 @@ import { mkdirSync, copyFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 const dist = 'dist';
-const routes = ['shop', 'products', 'shop/mikan-mango-chiffon', 'custom-cake', 'our-story'];
+const routes = ['shop', 'products', 'shop/mikan-mango-chiffon', 'custom-cake', 'our-story', 'privacy-policy', 'terms-and-conditions'];
 if (existsSync(join(dist, 'index.html'))) {
   for (const route of routes) {
     const dir = join(dist, route);
