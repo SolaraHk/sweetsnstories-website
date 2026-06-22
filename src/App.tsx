@@ -340,7 +340,7 @@ function StoryPage({ lang }: { lang: Lang }) {
 }
 
 function PersonalCta({ lang, customText, buttonText }: { lang: Lang; customText: string; buttonText: string }) {
-  return <section className="personal-cta"><div>{tr(lang, 'Pickup · Wing Hing Industrial Building', '自取 · 榮興工業大廈')}<br />{tr(lang, 'Delivery · Selected Hong Kong districts', '配送 · 香港指定地區')}</div><div><h2>{customText}</h2><button className="text-link" onClick={() => navigate('custom')}>{buttonText} →</button></div><div>{tr(lang, 'Four-day advance order', '四日前預訂')}<br />WhatsApp 9680 2750</div></section>;
+  return <section className="personal-cta"><div><p className="eyebrow citrus">{tr(lang, 'CUSTOM CELEBRATIONS', '客製慶祝蛋糕')}</p><h2>{customText}</h2><button className="text-link" onClick={() => navigate('custom')}>{buttonText} →</button></div></section>;
 }
 
 function CartDrawer({ lang, open, items, onClose, onQty, onRemove }: { lang: Lang; open: boolean; items: CartItem[]; onClose: () => void; onQty: (id: string, delta: number) => void; onRemove: (id: string) => void }) {
